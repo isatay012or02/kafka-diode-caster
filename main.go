@@ -22,18 +22,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	udpReceiver, err := adapters.NewUDPReceiver(9999)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	kafkaWriter := adapters.NewKafkaWriter([]string{"localhost:9092"}, "example-topic")
-
-	catcherService := application.NewCatcherService(udpReceiver, kafkaWriter, hashCalculator)
-
-	err = catcherService.ReceiveAndPublishMessages()
-	if err != nil {
-		log.Fatal(err)
-	}
 }

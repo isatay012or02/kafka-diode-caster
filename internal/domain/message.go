@@ -1,6 +1,7 @@
 package domain
 
 type Message struct {
-	Data string `json:"data"`
-	Hash string `json:"hash"`
+	Topic string `json:"topic"`
+	Data  string `json:"data"`
+	Hash  string `json:"hash"`
 }

@@ -25,24 +25,7 @@ func (kr *KafkaReader) ReadMessage() (domain.Message, error) {
 	}
 
 	return domain.Message{
-		Data: string(msg.Value),
+		Topic: msg.Topic,
+		Data:  string(msg.Value),
 	}, nil
-}
-
-type KafkaWriter struct {
-	writer *kafka.Writer
-}
-
-func NewKafkaWriter(brokers []string, topic string) *KafkaWriter {
-	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: brokers,
-		Topic:   topic,
-	})
-	return &KafkaWriter{writer: writer}
-}
-
-func (kw *KafkaWriter) WriteMessage(message domain.Message) error {
-	return kw.writer.WriteMessages(nil, kafka.Message{
-		Value: []byte(message.Data),
-	})
 }
