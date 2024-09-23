@@ -7,6 +7,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o caster ./cmd/caster
+RUN go build -o caster ./
 
 CMD ["./caster"]
