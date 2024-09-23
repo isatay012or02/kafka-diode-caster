@@ -68,11 +68,11 @@ func RegisterMetrics() error {
 
 	broadcastClientStatusCnt = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Subsystem: "halykidEvents",
-			Name:      "ClientsStatus",
-			Help:      "счетчик количества стартов в сокет сессиях",
+			Subsystem: "caster",
+			Name:      "Status",
+			Help:      "счетчик количества стартов в kafka",
 		},
-		[]string{"code", "clientID", "status"},
+		[]string{"code", "topic", "status"},
 	)
 
 	return prometheus.Register(broadcastClientStatusCnt)
