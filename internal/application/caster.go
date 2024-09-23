@@ -34,6 +34,8 @@ func (c *CasterService) ProcessAndSendMessages() error {
 	for {
 		msg, err := c.KafkaReader.ReadMessage()
 		if err != nil {
+			adapters.BroadcastStatus(-1, msg.Topic, "ERROR", time.Since(timeStart))
+			adapters.BroadcastStatusInc(-1, msg.Topic, "ERROR")
 			return err
 		}
 
@@ -45,7 +47,8 @@ func (c *CasterService) ProcessAndSendMessages() error {
 		for _, duplicate := range duplicatedMessages {
 			err := c.UDPSender.Send(duplicate)
 			if err != nil {
-				adapters.BroadcastStatus(-1, msg.Topic, "ERROR", time.Since(timeStart))
+				adapters.BroadcastStatus(-2, msg.Topic, "ERROR", time.Since(timeStart))
+				adapters.BroadcastStatusInc(-2, msg.Topic, "ERROR")
 				return err
 			}
 		}

@@ -17,12 +17,7 @@
       "test4:9092"
     ],
     "GroupID": "group",
-    "Topic": [
-      "SyslogProducer",
-      "MQTTProducer",
-      "FileTransferProducer",
-      "OtherProducer"
-    ],
+    "Topic": "SyslogProducer",
     "Metrics": {
       "Enabled": true,
       "Label": "caster",
