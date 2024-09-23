@@ -1,6 +1,6 @@
 module github.com/isatay012or02/kafka-diode-caster
 
-go 1.23
+go 1.22
 
 require (
 	github.com/gin-contrib/pprof v1.5.0
