@@ -3,6 +3,7 @@ package application
 import (
 	"github.com/isatay012or02/kafka-diode-caster/internal/adapters"
 	"github.com/isatay012or02/kafka-diode-caster/internal/ports"
+	"time"
 )
 
 type CasterService struct {
@@ -27,6 +28,9 @@ func NewCasterService(kafkaReader *adapters.KafkaReader, udpSender *adapters.UDP
 }
 
 func (c *CasterService) ProcessAndSendMessages() error {
+
+	timeStart := time.Now()
+
 	for {
 		msg, err := c.KafkaReader.ReadMessage()
 		if err != nil {
@@ -41,8 +45,11 @@ func (c *CasterService) ProcessAndSendMessages() error {
 		for _, duplicate := range duplicatedMessages {
 			err := c.UDPSender.Send(duplicate)
 			if err != nil {
+				adapters.BroadcastStatus(-1, msg.Topic, "ERROR", time.Since(timeStart))
 				return err
 			}
 		}
+
+		adapters.BroadcastStatus(0, msg.Topic, "SUCCESS", time.Since(timeStart))
 	}
 }

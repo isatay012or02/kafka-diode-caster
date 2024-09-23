@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"context"
 	"github.com/isatay012or02/kafka-diode-caster/internal/domain"
 	"github.com/segmentio/kafka-go"
 )
@@ -19,7 +20,7 @@ func NewKafkaReader(brokers []string, topic string, groupID string) *KafkaReader
 }
 
 func (kr *KafkaReader) ReadMessage() (domain.Message, error) {
-	msg, err := kr.reader.ReadMessage(nil)
+	msg, err := kr.reader.ReadMessage(context.Background())
 	if err != nil {
 		return domain.Message{}, err
 	}

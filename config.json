@@ -1,0 +1,33 @@
+{
+  "Http": {
+    "Port":8080,
+    "GIN": {
+      "ReleaseMode": false,
+      "UseLogger": true,
+      "UseRecovery": true
+    },
+    "ProfilingEnabled": true,
+    "StopTimeout": 5000
+  },
+  "Queue": {
+    "Brokers": [
+      "test1:9092",
+      "test2:9092",
+      "test3:9092",
+      "test4:9092"
+    ],
+    "GroupID": "group",
+    "Topic": [
+      "SyslogProducer",
+      "MQTTProducer",
+      "FileTransferProducer",
+      "OtherProducer"
+    ],
+    "Metrics": {
+      "Enabled": true,
+      "Label": "caster",
+      "DurationBuckets": [0.001, 0.003, 0.005, 0.007, 0.01, 0.015, 0.02, 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 3]
+    }
+  },
+  "UdpAddress": "127.0.0.1:9999"
+}
