@@ -26,7 +26,7 @@ type HttpCfg struct {
 type Queue struct {
 	Brokers []string
 	GroupID string
-	Topic   string
+	Topics  []string
 	Metrics struct {
 		Enabled         bool
 		Label           string

@@ -10,11 +10,13 @@ type KafkaReader struct {
 	reader *kafka.Reader
 }
 
-func NewKafkaReader(brokers []string, topic string, groupID string) *KafkaReader {
+func NewKafkaReader(brokers []string, topics []string, groupID string) *KafkaReader {
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: brokers,
-		Topic:   topic,
-		GroupID: groupID,
+		Brokers:     brokers,
+		GroupTopics: topics,
+		GroupID:     groupID,
+		MinBytes:    10e3,
+		MaxBytes:    10e6,
 	})
 	return &KafkaReader{reader: reader}
 }

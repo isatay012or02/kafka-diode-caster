@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, cfg.Queue.Topic, cfg.Queue.GroupID)
+	kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, cfg.Queue.Topics, cfg.Queue.GroupID)
 	udpSender, err := adapters.NewUDPSender(cfg.UdpAddress)
 	if err != nil {
 		panic(err)

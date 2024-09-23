@@ -84,11 +84,6 @@ func NewServer(config *config.Config) (Server, error) {
 	adapters.RegisterMetrics()
 	adapters.RegisterKafkaDurationHistogram(config.Queue.Metrics.Label, config.Queue.Metrics.DurationBuckets)
 
-	//prometheusgin.Use(r, "halykid-events")
-	//if err != nil {
-	//	return nil, err
-	//}
-
 	srv.routers()
 
 	return srv, nil

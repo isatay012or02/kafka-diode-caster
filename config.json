@@ -11,13 +11,14 @@
   },
   "Queue": {
     "Brokers": [
-      "test1:9092",
-      "test2:9092",
-      "test3:9092",
-      "test4:9092"
+      "testBroker:9092"
     ],
     "GroupID": "group",
-    "Topic": "SyslogProducer",
+    "Topics": [
+      "SyslogProducer",
+      "MQTTProducer",
+      "FileTransferProducer"
+    ],
     "Metrics": {
       "Enabled": true,
       "Label": "caster",
