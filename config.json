@@ -11,7 +11,7 @@
   },
   "Queue": {
     "Brokers": [
-      "testBroker:9092"
+      "kafka:9092"
     ],
     "GroupID": "group",
     "Topics": [
