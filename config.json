@@ -11,7 +11,7 @@
   },
   "Queue": {
     "Brokers": [
-      "kafka:9092"
+      "127.0.0.1:9092"
     ],
     "GroupID": "caster",
     "Topics": [
