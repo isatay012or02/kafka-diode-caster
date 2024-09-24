@@ -17,6 +17,32 @@ func main() {
 		panic(err)
 	}
 
+	go func(cfg *config.Config) {
+		srv, err := http.NewServer(cfg)
+		if err != nil {
+			panic(err)
+		}
+
+		startServerErrorCH := srv.Start()
+
+		quit := make(chan os.Signal)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+		select {
+		case err = <-startServerErrorCH:
+			{
+				panic(err)
+			}
+		case q := <-quit:
+			{
+				fmt.Printf("receive signal %s, stopping server...\n", q.String())
+				if err = srv.Stop(); err != nil {
+					fmt.Printf("stop server error: %s\n", err.Error())
+				}
+			}
+		}
+	}(cfg)
+
 	kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, cfg.Queue.Topics, cfg.Queue.GroupID)
 	udpSender, err := adapters.NewUDPSender(cfg.UdpAddress)
 	if err != nil {
@@ -31,29 +57,5 @@ func main() {
 	err = casterService.ProcessAndSendMessages()
 	if err != nil {
 		panic(err)
-	}
-
-	srv, err := http.NewServer(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	startServerErrorCH := srv.Start()
-
-	quit := make(chan os.Signal)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-	select {
-	case err = <-startServerErrorCH:
-		{
-			panic(err)
-		}
-	case q := <-quit:
-		{
-			fmt.Printf("receive signal %s, stopping server...\n", q.String())
-			if err = srv.Stop(); err != nil {
-				fmt.Printf("stop server error: %s\n", err.Error())
-			}
-		}
 	}
 }
