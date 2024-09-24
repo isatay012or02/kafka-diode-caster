@@ -17,7 +17,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   caster:
@@ -25,7 +25,7 @@ services:
       context: https://github.com/isatay012or02/kafka-diode-caster.git
       dockerfile: Dockerfile
     environment:
-      KAFKA_BROKER: kafka:9092
+      KAFKA_BROKER: 127.0.0.1:9092
       UDP_ADDRESS: "127.0.0.1:9999"
     networks:
       - internal

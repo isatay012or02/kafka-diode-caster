@@ -13,7 +13,7 @@
     "Brokers": [
       "kafka:9092"
     ],
-    "GroupID": "group",
+    "GroupID": "caster",
     "Topics": [
       "SyslogProducer",
       "MQTTProducer",
