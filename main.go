@@ -18,44 +18,44 @@ func main() {
 	}
 
 	go func(cfg *config.Config) {
-		srv, err := http.NewServer(cfg)
+		kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, cfg.Queue.Topics, cfg.Queue.GroupID)
+		udpSender, err := adapters.NewUDPSender(cfg.UdpAddress)
 		if err != nil {
 			panic(err)
 		}
 
-		startServerErrorCH := srv.Start()
+		hashCalculator := adapters.NewSHA1HashCalculator()
+		duplicator := adapters.NewMessageDuplicator()
 
-		quit := make(chan os.Signal)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, 2)
 
-		select {
-		case err = <-startServerErrorCH:
-			{
-				panic(err)
-			}
-		case q := <-quit:
-			{
-				fmt.Printf("receive signal %s, stopping server...\n", q.String())
-				if err = srv.Stop(); err != nil {
-					fmt.Printf("stop server error: %s\n", err.Error())
-				}
-			}
+		err = casterService.ProcessAndSendMessages()
+		if err != nil {
+			panic(err)
 		}
 	}(cfg)
 
-	kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, cfg.Queue.Topics, cfg.Queue.GroupID)
-	udpSender, err := adapters.NewUDPSender(cfg.UdpAddress)
+	srv, err := http.NewServer(cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	hashCalculator := adapters.NewSHA1HashCalculator()
-	duplicator := adapters.NewMessageDuplicator()
+	startServerErrorCH := srv.Start()
 
-	casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, 2)
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	err = casterService.ProcessAndSendMessages()
-	if err != nil {
-		panic(err)
+	select {
+	case err = <-startServerErrorCH:
+		{
+			panic(err)
+		}
+	case q := <-quit:
+		{
+			fmt.Printf("receive signal %s, stopping server...\n", q.String())
+			if err = srv.Stop(); err != nil {
+				fmt.Printf("stop server error: %s\n", err.Error())
+			}
+		}
 	}
 }
