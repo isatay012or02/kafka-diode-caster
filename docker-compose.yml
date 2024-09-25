@@ -49,6 +49,8 @@ services:
     networks:
       - kafka_net
     restart: always
+    links:
+      - kafka-ui
 
 networks:
   kafka_net:
