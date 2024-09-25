@@ -20,9 +20,24 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper_caster:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_caster:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
     networks:
       - kafka_net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - 8090:8080
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_caster:9092,kafka2:9093
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper_caster:2181
+    links:
+      - kafka_caster
+      - kafka2
+      - zookeeper
 
   caster:
     build:
