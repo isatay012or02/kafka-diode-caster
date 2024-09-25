@@ -32,7 +32,7 @@ services:
     restart: always
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_caster:9092,
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_caster:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper_caster:2181
     links:
       - kafka_caster
