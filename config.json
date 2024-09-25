@@ -1,6 +1,6 @@
 {
   "Http": {
-    "Port":8080,
+    "Port":8085,
     "GIN": {
       "ReleaseMode": false,
       "UseLogger": true,
@@ -11,7 +11,7 @@
   },
   "Queue": {
     "Brokers": [
-      "kafka:9092"
+      "kafka_caster:9092"
     ],
     "GroupID": "caster",
     "Topics": [
