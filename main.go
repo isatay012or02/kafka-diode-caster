@@ -27,7 +27,7 @@ func main() {
 		hashCalculator := adapters.NewSHA1HashCalculator()
 		duplicator := adapters.NewMessageDuplicator()
 
-		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, 2)
+		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, cfg.DuplicateCopies)
 
 		err = casterService.ProcessAndSendMessages()
 		if err != nil {

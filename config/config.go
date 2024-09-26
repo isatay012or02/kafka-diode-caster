@@ -8,8 +8,9 @@ import (
 type Config struct {
 	Http HttpCfg
 	//CorsSettings ginmiddlewares.CORSSettings
-	Queue      Queue
-	UdpAddress string
+	Queue           Queue
+	UdpAddress      string
+	DuplicateCopies int
 }
 
 type HttpCfg struct {
