@@ -29,6 +29,7 @@ func (kr *KafkaReader) ReadMessage() (domain.Message, error) {
 
 	return domain.Message{
 		Topic: msg.Topic,
-		Data:  string(msg.Value),
+		Key:   string(msg.Key),
+		Value: string(msg.Value),
 	}, nil
 }

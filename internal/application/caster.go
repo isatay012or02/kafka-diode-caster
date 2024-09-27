@@ -12,11 +12,12 @@ type CasterService struct {
 	HashCalculator ports.MessageHashCalculator
 	Duplicator     ports.MessageDuplicator
 	Copies         int
+	EnableHash     bool
 }
 
 func NewCasterService(kafkaReader *adapters.KafkaReader, udpSender *adapters.UDPSender,
 	hashCalculator ports.MessageHashCalculator,
-	duplicator ports.MessageDuplicator, copies int) *CasterService {
+	duplicator ports.MessageDuplicator, copies int, enableHash bool) *CasterService {
 
 	return &CasterService{
 		KafkaReader:    kafkaReader,
@@ -24,6 +25,7 @@ func NewCasterService(kafkaReader *adapters.KafkaReader, udpSender *adapters.UDP
 		HashCalculator: hashCalculator,
 		Duplicator:     duplicator,
 		Copies:         copies,
+		EnableHash:     enableHash,
 	}
 }
 
@@ -39,8 +41,10 @@ func (c *CasterService) ProcessAndSendMessages() error {
 			return err
 		}
 
-		hash := c.HashCalculator.Calculate(msg.Data)
-		msg.Hash = hash
+		if c.EnableHash {
+			hash := c.HashCalculator.Calculate(msg.Value)
+			msg.Hash = hash
+		}
 
 		duplicatedMessages := c.Duplicator.Duplicate(msg, c.Copies)
 

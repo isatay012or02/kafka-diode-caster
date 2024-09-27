@@ -8,6 +8,8 @@ import (
 	"github.com/isatay012or02/kafka-diode-caster/internal/http"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 )
 
@@ -18,8 +20,28 @@ func main() {
 	}
 
 	go func(cfg *config.Config) {
-		kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, cfg.Queue.Topics, cfg.Queue.GroupID)
-		udpSender, err := adapters.NewUDPSender(cfg.UdpAddress)
+		udpAddr := os.Getenv("UDP_ADDRESS")
+		topicsEnv := os.Getenv("TOPICS")
+		if topicsEnv == "" {
+			fmt.Println("TOPICS не задан")
+			return
+		}
+
+		topics := strings.Split(topicsEnv, ",")
+		copiesCountStr := os.Getenv("DUPLICATES_COUNT")
+		copiesCount, err := strconv.Atoi(copiesCountStr)
+		if err != nil {
+			panic(err)
+		}
+
+		enableHashEnv := os.Getenv("ENABLE_HASH")
+		enableHash := false
+		if enableHashEnv == "true" {
+			enableHash = true
+		}
+
+		kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, topics, cfg.Queue.GroupID)
+		udpSender, err := adapters.NewUDPSender(udpAddr)
 		if err != nil {
 			panic(err)
 		}
@@ -27,7 +49,7 @@ func main() {
 		hashCalculator := adapters.NewSHA1HashCalculator()
 		duplicator := adapters.NewMessageDuplicator()
 
-		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, cfg.DuplicateCopies)
+		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, copiesCount, enableHash)
 
 		err = casterService.ProcessAndSendMessages()
 		if err != nil {
