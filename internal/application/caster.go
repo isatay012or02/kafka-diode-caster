@@ -41,6 +41,7 @@ func (c *CasterService) ProcessAndSendMessages() error {
 		if err != nil {
 			adapters.BroadcastStatus(-1, msg.Topic, "ERROR", time.Since(timeStart))
 			c.Logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
+			return err
 		}
 
 		if c.EnableHash {

@@ -46,7 +46,7 @@ services:
       TOPICS: "SyslogProducer,MQTTProducer,FileTransferProducer"
       ENABLE_HASH: "true"
       DUPLICATES_COUNT: 1
-      KAFKA_LOGGER_TOPIC: "SyslogProducer"
+      KAFKA_LOGGER_TOPIC: "LogsAndMetrics"
     networks:
       - kafka_net
     restart: always

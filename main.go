@@ -29,12 +29,13 @@ func main() {
 		udpAddr := os.Getenv("UDP_ADDRESS")
 		if udpAddr == "" {
 			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), "UDP_ADDRESS environment variable not set"))
-			return
+			panic(err)
 		}
 
 		topicsEnv := os.Getenv("TOPICS")
 		if topicsEnv == "" {
 			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), "TOPICS environment variable not set"))
+			panic(err)
 		}
 
 		topics := strings.Split(topicsEnv, ",")
@@ -42,11 +43,13 @@ func main() {
 		copiesCount, err := strconv.Atoi(copiesCountStr)
 		if err != nil {
 			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
+			panic(err)
 		}
 
 		enableHashEnv := os.Getenv("ENABLE_HASH")
 		if enableHashEnv == "" {
 			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), "ENABLE_HASH environment variable not set"))
+			panic(err)
 		}
 		enableHash := false
 		if enableHashEnv == "true" {
@@ -57,6 +60,7 @@ func main() {
 		udpSender, err := adapters.NewUDPSender(udpAddr)
 		if err != nil {
 			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
+			panic(err)
 		}
 
 		hashCalculator := adapters.NewSHA1HashCalculator()
