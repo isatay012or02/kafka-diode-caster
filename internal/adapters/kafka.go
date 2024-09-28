@@ -33,3 +33,7 @@ func (kr *KafkaReader) ReadMessage() (domain.Message, error) {
 		Value: string(msg.Value),
 	}, nil
 }
+
+func (kl *KafkaReader) Close() {
+	kl.reader.Close()
+}

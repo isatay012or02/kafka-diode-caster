@@ -15,20 +15,15 @@ import (
 )
 
 func main() {
-	//var logBuilder strings.Builder
-
 	cfg, err := config.Init("config.json")
 	if err != nil {
-		//logBuilder.WriteString(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
 		panic(err)
 	}
 
 	go func(cfg *config.Config) {
-		var loggerBroker []string
-		loggerBroker[0] = os.Getenv("KAFKA_LOGGER_BROKER")
 		loggerTopic := os.Getenv("KAFKA_LOGGER_TOPIC")
 
-		logger := adapters.NewKafkaLogger(loggerBroker, loggerTopic)
+		logger := adapters.NewKafkaLogger(cfg.Queue.Brokers, loggerTopic)
 
 		udpAddr := os.Getenv("UDP_ADDRESS")
 		if udpAddr == "" {
