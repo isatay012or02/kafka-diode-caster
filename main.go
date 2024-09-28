@@ -11,30 +11,47 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 func main() {
+	//var logBuilder strings.Builder
+
 	cfg, err := config.Init("config.json")
 	if err != nil {
+		//logBuilder.WriteString(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
 		panic(err)
 	}
 
 	go func(cfg *config.Config) {
+		var loggerBroker []string
+		loggerBroker[0] = os.Getenv("KAFKA_LOGGER_BROKER")
+		loggerTopic := os.Getenv("KAFKA_LOGGER_TOPIC")
+
+		logger := adapters.NewKafkaLogger(loggerBroker, loggerTopic)
+
 		udpAddr := os.Getenv("UDP_ADDRESS")
+		if udpAddr == "" {
+			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), "UDP_ADDRESS environment variable not set"))
+			return
+		}
+
 		topicsEnv := os.Getenv("TOPICS")
 		if topicsEnv == "" {
-			fmt.Println("TOPICS не задан")
-			return
+			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), "TOPICS environment variable not set"))
 		}
 
 		topics := strings.Split(topicsEnv, ",")
 		copiesCountStr := os.Getenv("DUPLICATES_COUNT")
 		copiesCount, err := strconv.Atoi(copiesCountStr)
 		if err != nil {
-			panic(err)
+			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
 		}
 
 		enableHashEnv := os.Getenv("ENABLE_HASH")
+		if enableHashEnv == "" {
+			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), "ENABLE_HASH environment variable not set"))
+		}
 		enableHash := false
 		if enableHashEnv == "true" {
 			enableHash = true
@@ -43,15 +60,17 @@ func main() {
 		kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, topics, cfg.Queue.GroupID)
 		udpSender, err := adapters.NewUDPSender(udpAddr)
 		if err != nil {
-			panic(err)
+			logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
 		}
 
 		hashCalculator := adapters.NewSHA1HashCalculator()
 		duplicator := adapters.NewMessageDuplicator()
 
-		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, copiesCount, enableHash)
+		casterService := application.NewCasterService(kafkaReader, udpSender, hashCalculator, duplicator, copiesCount, enableHash, logger)
 
 		err = casterService.ProcessAndSendMessages()
+		logger.SendMetricsToKafka()
+		logger.Close()
 		if err != nil {
 			panic(err)
 		}

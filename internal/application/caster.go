@@ -1,6 +1,7 @@
 package application
 
 import (
+	"fmt"
 	"github.com/isatay012or02/kafka-diode-caster/internal/adapters"
 	"github.com/isatay012or02/kafka-diode-caster/internal/ports"
 	"time"
@@ -13,11 +14,12 @@ type CasterService struct {
 	Duplicator     ports.MessageDuplicator
 	Copies         int
 	EnableHash     bool
+	Logger         *adapters.KafkaLogger
 }
 
 func NewCasterService(kafkaReader *adapters.KafkaReader, udpSender *adapters.UDPSender,
 	hashCalculator ports.MessageHashCalculator,
-	duplicator ports.MessageDuplicator, copies int, enableHash bool) *CasterService {
+	duplicator ports.MessageDuplicator, copies int, enableHash bool, logger *adapters.KafkaLogger) *CasterService {
 
 	return &CasterService{
 		KafkaReader:    kafkaReader,
@@ -26,6 +28,7 @@ func NewCasterService(kafkaReader *adapters.KafkaReader, udpSender *adapters.UDP
 		Duplicator:     duplicator,
 		Copies:         copies,
 		EnableHash:     enableHash,
+		Logger:         logger,
 	}
 }
 
@@ -37,8 +40,7 @@ func (c *CasterService) ProcessAndSendMessages() error {
 		msg, err := c.KafkaReader.ReadMessage()
 		if err != nil {
 			adapters.BroadcastStatus(-1, msg.Topic, "ERROR", time.Since(timeStart))
-			adapters.BroadcastStatusInc(-1, msg.Topic, "ERROR")
-			return err
+			c.Logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
 		}
 
 		if c.EnableHash {
@@ -52,11 +54,12 @@ func (c *CasterService) ProcessAndSendMessages() error {
 			err := c.UDPSender.Send(duplicate)
 			if err != nil {
 				adapters.BroadcastStatus(-2, msg.Topic, "ERROR", time.Since(timeStart))
-				adapters.BroadcastStatusInc(-2, msg.Topic, "ERROR")
+				c.Logger.Log(fmt.Sprintf("[%v][Error] %v", time.Now(), err.Error()))
 				return err
 			}
 		}
 
 		adapters.BroadcastStatus(0, msg.Topic, "SUCCESS", time.Since(timeStart))
+		c.Logger.SendMetricsToKafka()
 	}
 }

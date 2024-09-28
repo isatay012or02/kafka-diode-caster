@@ -46,6 +46,8 @@ services:
       TOPICS: "topic1,topic2,topic3"
       ENABLE_HASH: "true"
       DUPLICATES_COUNT: 1
+      KAFKA_LOGGER_BROKER: ""
+      KAFKA_LOGGER_TOPIC: ""
     networks:
       - kafka_net
     restart: always
