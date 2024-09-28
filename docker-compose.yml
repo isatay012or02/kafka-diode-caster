@@ -42,11 +42,10 @@ services:
       context: https://github.com/isatay012or02/kafka-diode-caster.git
       dockerfile: Dockerfile
     environment:
-      UDP_ADDRESS: "127.0.0.1:9999"
-      TOPICS: "topic1,topic2,topic3"
+      UDP_ADDRESS: "188.188.0.1 :9999"
+      TOPICS: "SyslogProducer,MQTTProducer,FileTransferProducer"
       ENABLE_HASH: "true"
       DUPLICATES_COUNT: 1
-      KAFKA_LOGGER_BROKER: ""
       KAFKA_LOGGER_TOPIC: ""
     networks:
       - kafka_net
