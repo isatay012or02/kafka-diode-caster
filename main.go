@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -20,7 +21,13 @@ func main() {
 		panic(err)
 	}
 
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
 	go func(cfg *config.Config) {
+		defer wg.Done()
+
 		loggerTopic := os.Getenv("KAFKA_LOGGER_TOPIC")
 
 		logger := adapters.NewKafkaLogger(cfg.Queue.Brokers, loggerTopic)
@@ -99,4 +106,6 @@ func main() {
 			}
 		}
 	}
+
+	wg.Wait()
 }
