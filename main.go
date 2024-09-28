@@ -24,6 +24,7 @@ func main() {
 		loggerTopic := os.Getenv("KAFKA_LOGGER_TOPIC")
 
 		logger := adapters.NewKafkaLogger(cfg.Queue.Brokers, loggerTopic)
+		logger.Log(fmt.Sprintf("[%v][INFO]Caster service started", time.Now()))
 
 		udpAddr := os.Getenv("UDP_ADDRESS")
 		if udpAddr == "" {
