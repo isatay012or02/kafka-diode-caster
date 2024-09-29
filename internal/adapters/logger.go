@@ -72,6 +72,19 @@ func (kl *KafkaLogger) SendMetricsToKafka() {
 	}
 }
 
+func CreateLoggerTopic(broker, topic string) error {
+	conn, err := kafka.Dial("tcp", broker)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.CreateTopics(kafka.TopicConfig{
+		Topic:             topic,
+		ReplicationFactor: 1,
+		NumPartitions:     1,
+	})
+}
 func (kl *KafkaLogger) Close() {
 	kl.kafkaWriter.Close()
 }
