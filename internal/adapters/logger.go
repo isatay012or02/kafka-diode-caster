@@ -52,7 +52,7 @@ func (kl *KafkaLogger) SendMetricsToKafka() {
 	}
 
 	var buf bytes.Buffer
-	encoder := expfmt.NewEncoder(&buf, expfmt.TextVersion)
+	encoder := expfmt.NewEncoder(&buf, expfmt.FmtOpenMetrics_1_0_0)
 
 	for _, mf := range metricFamilies {
 		err := encoder.Encode(mf)
@@ -72,19 +72,6 @@ func (kl *KafkaLogger) SendMetricsToKafka() {
 	}
 }
 
-func CreateLoggerTopic(broker, topic string) error {
-	conn, err := kafka.Dial("kafka_net", broker)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
-	return conn.CreateTopics(kafka.TopicConfig{
-		Topic:             topic,
-		ReplicationFactor: 1,
-		NumPartitions:     1,
-	})
-}
 func (kl *KafkaLogger) Close() {
 	kl.kafkaWriter.Close()
 }
