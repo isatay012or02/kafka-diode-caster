@@ -73,7 +73,7 @@ func (kl *KafkaLogger) SendMetricsToKafka() {
 }
 
 func CreateLoggerTopic(broker, topic string) error {
-	conn, err := kafka.Dial("tcp", broker)
+	conn, err := kafka.Dial("kafka_net", broker)
 	if err != nil {
 		return err
 	}
