@@ -31,7 +31,6 @@ func main() {
 		loggerTopic := os.Getenv("KAFKA_LOGGER_TOPIC")
 
 		logger := adapters.NewKafkaLogger(cfg.Queue.Brokers, loggerTopic)
-		defer logger.Close()
 
 		logger.Log(fmt.Sprintf("[%v][INFO]Caster service started", time.Now()))
 
@@ -66,7 +65,6 @@ func main() {
 		}
 
 		kafkaReader := adapters.NewKafkaReader(cfg.Queue.Brokers, topics, cfg.Queue.GroupID)
-		defer kafkaReader.Close()
 
 		udpSender, err := adapters.NewUDPSender(udpAddr)
 		if err != nil {
@@ -81,7 +79,8 @@ func main() {
 
 		err = casterService.ProcessAndSendMessages()
 		logger.SendMetricsToKafka()
-
+		kafkaReader.Close()
+		logger.Close()
 		if err != nil {
 			panic(err)
 		}
