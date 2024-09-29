@@ -21,6 +21,9 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper_caster:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_caster:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    command: "sh -c 'kafka-topics.sh --create --topic LogsAndMetrics --bootstrap-server kafka_caster:9092 --replication-factor 1 --partitions 1; sleep 300'"
+
     networks:
       - kafka_net
 
