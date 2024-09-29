@@ -79,7 +79,7 @@ func main() {
 
 		err = casterService.ProcessAndSendMessages()
 		logger.SendMetricsToKafka()
-		kafkaReader.Close()
+		//kafkaReader.Close()
 		logger.Close()
 		if err != nil {
 			panic(err)
