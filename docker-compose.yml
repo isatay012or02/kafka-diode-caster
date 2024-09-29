@@ -20,9 +20,27 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper_caster:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_caster:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - kafka_net
+
+  topic_creator:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - kafka_caster
+    networks:
+      - kafka_net
+    entrypoint: /bin/sh
+    command: -c "
+      echo 'Waiting for Kafka to be ready...';
+      while ! nc -z kafka_caster 9092; do
+      sleep 1;
+      done;
+      echo 'Kafka is ready. Creating topics...';
+      kafka-topics --create --topic LogsAndMetrics --bootstrap-server kafka_caster:9092 --replication-factor 1 --partitions 1;
+      echo 'Topics created.';
+      sleep 10;"
 
   kafka-ui:
     image: provectuslabs/kafka-ui
